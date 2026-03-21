@@ -37,7 +37,7 @@ export const clientSchema = z.object({
 });
 
 export const invoiceItemSchema = z.object({
-  id: z.string(),
+  id: z.string().optional(),
   description: z.string().min(1, "Description is required"),
   quantity: z.number().min(0.01, "Quantity must be positive"),
   rate: z.number().min(0, "Rate must be non-negative"),
@@ -46,7 +46,7 @@ export const invoiceItemSchema = z.object({
 
 export const invoiceSchema = z.object({
   clientId: z.string().min(1, "Client is required"),
-  number: z.string().min(1, "Invoice number is required"),
+  number: z.string().optional(),
   issueDate: z.string(),
   dueDate: z.string(),
   currency: z.string().default("USD"),
@@ -56,6 +56,7 @@ export const invoiceSchema = z.object({
   discountValue: z.number().min(0).default(0),
   notes: z.string().optional(),
   paymentTerms: z.string().optional(),
+  status: z.enum(["DRAFT", "SENT", "PAID", "OVERDUE", "CANCELLED", "PARTIAL"]).optional(),
 });
 
 export const expenseSchema = z.object({

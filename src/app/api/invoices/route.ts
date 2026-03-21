@@ -55,7 +55,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Validation failed", details: parsed.error.flatten() }, { status: 400 });
   }
 
-  const { items, taxRate, discountType, discountValue, ...rest } = parsed.data;
+  const { items, taxRate, discountType, discountValue, status, ...rest } = parsed.data;
 
   const totals = calculateInvoiceTotals(
     items,
@@ -88,6 +88,7 @@ export async function POST(req: Request) {
         taxRate,
         discountType: discountType || null,
         discountValue,
+        status: status || "DRAFT",
         ...totals,
         issueDate: new Date(rest.issueDate),
         dueDate: new Date(rest.dueDate),

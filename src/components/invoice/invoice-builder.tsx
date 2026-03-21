@@ -140,18 +140,18 @@ export function InvoiceBuilder({ defaultValues }: InvoiceBuilderProps) {
     setIsSubmitting(true);
     try {
       const payload = {
-        ...data,
-        issuedAt: data.issuedAt.toISOString(),
+        clientId: data.clientId,
+        number: data.invoiceNumber,
+        issueDate: data.issuedAt.toISOString(),
         dueDate: data.dueDate.toISOString(),
-        items: items.map(({ id, ...item }) => item),
+        currency: data.currency,
+        notes: data.notes,
+        paymentTerms: data.paymentTerms,
+        items,
         taxRate,
         discountType,
         discountValue,
         status: submitAction === "send" ? "SENT" : "DRAFT",
-        subtotal: totals.subtotal,
-        taxAmount: totals.taxAmount,
-        discountAmount: totals.discountAmount,
-        total: totals.total,
       };
 
       const isEdit = !!defaultValues?.id;

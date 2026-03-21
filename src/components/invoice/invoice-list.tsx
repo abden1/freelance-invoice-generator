@@ -48,13 +48,13 @@ import { toast } from "sonner";
 
 interface Invoice {
   id: string;
-  invoiceNumber: string;
-  clientName: string;
+  number: string;
+  client: { id: string; name: string; email: string; company?: string };
   total: number;
   currency: string;
   status: string;
   dueDate: string;
-  issuedAt: string;
+  issueDate: string;
 }
 
 const STATUS_TABS = ["all", "DRAFT", "SENT", "PAID", "OVERDUE"] as const;
@@ -216,10 +216,10 @@ export function InvoiceList() {
                         href={`/invoices/${invoice.id}`}
                         className="font-medium text-primary hover:underline"
                       >
-                        {invoice.invoiceNumber}
+                        {invoice.number}
                       </Link>
                     </TableCell>
-                    <TableCell>{invoice.clientName}</TableCell>
+                    <TableCell>{invoice.client?.name}</TableCell>
                     <TableCell className="font-medium">
                       {formatCurrency(invoice.total, invoice.currency)}
                     </TableCell>
@@ -227,7 +227,7 @@ export function InvoiceList() {
                       <InvoiceStatusBadge status={invoice.status} />
                     </TableCell>
                     <TableCell className="hidden md:table-cell text-muted-foreground text-sm">
-                      {formatDate(invoice.issuedAt)}
+                      {formatDate(invoice.issueDate)}
                     </TableCell>
                     <TableCell className="hidden md:table-cell text-muted-foreground text-sm">
                       {formatDate(invoice.dueDate)}
@@ -251,7 +251,7 @@ export function InvoiceList() {
                             </Link>
                           </DropdownMenuItem>
                           <DropdownMenuItem
-                            onClick={() => handleDownloadPDF(invoice.id, invoice.invoiceNumber)}
+                            onClick={() => handleDownloadPDF(invoice.id, invoice.number)}
                           >
                             <Download className="mr-2 h-4 w-4" /> Download PDF
                           </DropdownMenuItem>
