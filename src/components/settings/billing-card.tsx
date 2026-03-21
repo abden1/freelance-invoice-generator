@@ -14,7 +14,6 @@ interface Plan {
   id: string;
   name: string;
   price: string;
-  priceId?: string;
   description: string;
   features: string[];
   limits: {
@@ -44,7 +43,6 @@ const PLANS: Plan[] = [
     id: "PRO",
     name: "Pro",
     price: "$15",
-    priceId: process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID,
     description: "For growing freelancers",
     features: [
       "50 invoices per month",
@@ -63,7 +61,6 @@ const PLANS: Plan[] = [
     id: "BUSINESS",
     name: "Business",
     price: "$39",
-    priceId: process.env.NEXT_PUBLIC_STRIPE_BUSINESS_PRICE_ID,
     description: "Unlimited for power users",
     features: [
       "Unlimited invoices",
@@ -104,18 +101,13 @@ export function BillingCard({
   const invoiceUsagePercent =
     invoiceLimit === Infinity ? 0 : Math.min((invoicesThisMonth / invoiceLimit) * 100, 100);
 
-  const handleUpgrade = async (planId: string, priceId?: string) => {
-    if (!priceId) {
-      toast.error("Pricing not configured. Please contact support.");
-      return;
-    }
-
+  const handleUpgrade = async (planId: string) => {
     setIsLoading(planId);
     try {
       const res = await fetch("/api/stripe/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ priceId }),
+        body: JSON.stringify({ plan: planId }),
       });
 
       if (!res.ok) throw new Error("Failed to create checkout session");
@@ -268,7 +260,7 @@ export function BillingCard({
                     <Button
                       className="w-full"
                       variant={p.highlight ? "default" : "outline"}
-                      onClick={() => handleUpgrade(p.id, p.priceId)}
+                      onClick={() => handleUpgrade(p.id)}
                       disabled={!!isLoading}
                     >
                       {isLoading === p.id && (

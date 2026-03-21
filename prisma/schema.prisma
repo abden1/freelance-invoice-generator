@@ -144,7 +144,7 @@ model Invoice {
 model Contract {
   id           String         @id @default(cuid())
   userId       String
-  clientId     String
+  clientId     String?
   title        String
   templateType ContractType   @default(CUSTOM)
   content      String         @db.Text
@@ -156,8 +156,8 @@ model Contract {
   updatedAt    DateTime       @updatedAt
   signedAt     DateTime?
 
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  client Client? @relation(fields: [clientId], references: [id], onDelete: SetNull)
 }
 
 model Expense {

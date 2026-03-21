@@ -19,13 +19,13 @@ import { Button } from "@/components/ui/button";
 
 interface RecentInvoice {
   id: string;
-  invoiceNumber: string;
-  clientName: string;
+  number: string;
+  client: { name: string };
   total: number;
   currency: string;
   status: string;
   dueDate: string;
-  issuedAt: string;
+  issueDate: string;
 }
 
 export function RecentActivity() {
@@ -91,9 +91,9 @@ export function RecentActivity() {
               {invoices.map((invoice) => (
                 <TableRow key={invoice.id} className="hover:bg-muted/50">
                   <TableCell className="font-medium">
-                    {invoice.invoiceNumber}
+                    {invoice.number}
                   </TableCell>
-                  <TableCell>{invoice.clientName}</TableCell>
+                  <TableCell>{invoice.client?.name}</TableCell>
                   <TableCell>{formatCurrency(invoice.total, invoice.currency)}</TableCell>
                   <TableCell>
                     <InvoiceStatusBadge status={invoice.status} />

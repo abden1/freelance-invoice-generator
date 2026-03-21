@@ -26,10 +26,24 @@ export async function GET(req: Request) {
     orderBy: { createdAt: "desc" },
     include: {
       _count: { select: { invoices: true, contracts: true } },
+      invoices: {
+        where: { status: { not: "CANCELLED" } },
+        select: { total: true, status: true },
+      },
     },
   });
 
-  return NextResponse.json({ clients });
+  const clientsWithStats = clients.map(({ invoices, ...client }) => ({
+    ...client,
+    outstanding: invoices
+      .filter((i) => i.status === "SENT" || i.status === "OVERDUE")
+      .reduce((s, i) => s + Number(i.total), 0),
+    totalPaid: invoices
+      .filter((i) => i.status === "PAID")
+      .reduce((s, i) => s + Number(i.total), 0),
+  }));
+
+  return NextResponse.json({ clients: clientsWithStats });
 }
 
 export async function POST(req: Request) {

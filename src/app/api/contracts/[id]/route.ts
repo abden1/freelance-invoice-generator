@@ -36,13 +36,15 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
     const signingUrl = `${appUrl}/sign/${contract.signingToken}`;
 
-    await sendContractEmail({
-      to: contract.client.email,
-      clientName: contract.client.name,
-      contractTitle: contract.title,
-      signingUrl,
-      fromName: contract.user.companyName || contract.user.name || "FreelancePro",
-    });
+    if (contract.client) {
+      await sendContractEmail({
+        to: contract.client.email,
+        clientName: contract.client.name,
+        contractTitle: contract.title,
+        signingUrl,
+        fromName: contract.user.companyName || contract.user.name || "FreelancePro",
+      });
+    }
 
     await prisma.contract.update({
       where: { id },

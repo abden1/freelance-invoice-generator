@@ -14,10 +14,17 @@ export async function GET(req: Request) {
   const clientId = searchParams.get("clientId");
   const search = searchParams.get("search") || "";
 
+  // Support comma-separated status values e.g. "SENT,OVERDUE"
+  const statusFilter = status
+    ? status.includes(",")
+      ? { status: { in: status.split(",") as never[] } }
+      : { status: status as never }
+    : {};
+
   const invoices = await prisma.invoice.findMany({
     where: {
       userId: session.user.id,
-      ...(status ? { status: status as never } : {}),
+      ...statusFilter,
       ...(clientId ? { clientId } : {}),
       ...(search
         ? {

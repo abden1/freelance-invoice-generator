@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { Suspense } from "react";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -74,7 +76,7 @@ async function getAnalytics(userId: string) {
 
       revenueByMonth.push({
         month: format(monthDate, "MMM yyyy"),
-        revenue: monthInvoices
+        paid: monthInvoices
           .filter((inv) => inv.status === "PAID")
           .reduce((s, inv) => s + Number(inv.total), 0),
         invoiced: monthInvoices.reduce((s, inv) => s + Number(inv.total), 0),

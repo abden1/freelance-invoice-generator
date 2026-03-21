@@ -23,6 +23,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
 
   if (!invoice) return NextResponse.json({ error: "Invoice not found" }, { status: 404 });
 
+  try {
   const pdfBuffer = await generateInvoicePDF({
     number: invoice.number,
     issueDate: invoice.issueDate,
@@ -66,4 +67,9 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
       "Content-Disposition": `attachment; filename="invoice-${invoice.number}.pdf"`,
     },
   });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error("PDF generation error:", msg);
+    return NextResponse.json({ error: "PDF generation failed", detail: msg }, { status: 500 });
+  }
 }

@@ -12,8 +12,8 @@ import { cn } from "@/lib/utils";
 
 interface UpcomingInvoice {
   id: string;
-  invoiceNumber: string;
-  clientName: string;
+  number: string;
+  client: { name: string };
   total: number;
   currency: string;
   dueDate: string;
@@ -117,9 +117,9 @@ export function UpcomingDueDates() {
                   )}
                 >
                   <div className="min-w-0 flex-1">
-                    <p className="font-medium text-sm truncate">{invoice.clientName}</p>
+                    <p className="font-medium text-sm truncate">{invoice.client?.name}</p>
                     <p className="text-xs text-muted-foreground mt-0.5">
-                      {invoice.invoiceNumber} · {formatDate(invoice.dueDate)}
+                      {invoice.number} · {formatDate(invoice.dueDate)}
                     </p>
                   </div>
                   <div className="flex flex-col items-end gap-1 ml-3 shrink-0">
