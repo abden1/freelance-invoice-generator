@@ -19,6 +19,7 @@ export default auth((req) => {
   const isApiRoute = nextUrl.pathname.startsWith("/api");
   const isPublicApiRoute =
     nextUrl.pathname.startsWith("/api/auth") ||
+    nextUrl.pathname.startsWith("/api/register") ||
     nextUrl.pathname.startsWith("/api/stripe/webhook") ||
     nextUrl.pathname.startsWith("/api/contracts") && nextUrl.pathname.includes("/sign");
 
