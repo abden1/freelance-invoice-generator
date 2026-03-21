@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Bell, Mail, Clock, Loader2 } from "lucide-react";
+import { Bell, Mail, Clock, Loader2, Send, DollarSign, AlertTriangle, FileCheck, FileText } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -158,19 +158,19 @@ export default function NotificationsSettingsPage() {
         <CardContent>
           <ul className="space-y-2 text-sm text-muted-foreground">
             <li className="flex items-center gap-2">
-              <span>📤</span> Invoice sent to a client
+              <Send className="h-4 w-4 shrink-0" /> Invoice sent to a client
             </li>
             <li className="flex items-center gap-2">
-              <span>💰</span> Invoice marked as paid
+              <DollarSign className="h-4 w-4 shrink-0" /> Invoice marked as paid
             </li>
             <li className="flex items-center gap-2">
-              <span>⚠️</span> Invoice becomes overdue
+              <AlertTriangle className="h-4 w-4 shrink-0" /> Invoice becomes overdue
             </li>
             <li className="flex items-center gap-2">
-              <span>✍️</span> Contract signed by client
+              <FileCheck className="h-4 w-4 shrink-0" /> Contract signed by client
             </li>
             <li className="flex items-center gap-2">
-              <span>📋</span> Contract sent for signing
+              <FileText className="h-4 w-4 shrink-0" /> Contract sent for signing
             </li>
           </ul>
         </CardContent>

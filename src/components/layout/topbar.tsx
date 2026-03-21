@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect, useCallback } from "react";
-import { Menu, Sun, Moon, Bell, Check, Trash2 } from "lucide-react";
+import { Menu, Sun, Moon, Bell, Check, Trash2, Send, DollarSign, AlertTriangle, FileCheck, FileText } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { UserMenu } from "@/components/layout/user-menu";
@@ -49,12 +49,14 @@ interface Notification {
   createdAt: string;
 }
 
-const typeIcon: Record<string, string> = {
-  INVOICE_SENT: "📤",
-  INVOICE_PAID: "💰",
-  INVOICE_OVERDUE: "⚠️",
-  CONTRACT_SIGNED: "✍️",
-  CONTRACT_SENT: "📋",
+import type { LucideIcon } from "lucide-react";
+
+const typeIcon: Record<string, LucideIcon> = {
+  INVOICE_SENT: Send,
+  INVOICE_PAID: DollarSign,
+  INVOICE_OVERDUE: AlertTriangle,
+  CONTRACT_SIGNED: FileCheck,
+  CONTRACT_SENT: FileText,
 };
 
 interface TopbarProps {
@@ -197,9 +199,10 @@ export function Topbar({ onMenuClick }: TopbarProps) {
                       !n.read ? "bg-primary/5" : ""
                     }`}
                   >
-                    <span className="text-lg mt-0.5 shrink-0">
-                      {typeIcon[n.type] ?? "🔔"}
-                    </span>
+                    {(() => {
+                      const Icon = typeIcon[n.type] ?? Bell;
+                      return <Icon className="h-4 w-4 mt-0.5 shrink-0 text-muted-foreground" />;
+                    })()}
                     <div className="flex-1 min-w-0">
                       <p className={`text-sm leading-snug ${!n.read ? "font-medium" : ""}`}>
                         {n.title}
