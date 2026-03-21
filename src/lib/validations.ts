@@ -71,7 +71,7 @@ export const expenseSchema = z.object({
 });
 
 export const contractSchema = z.object({
-  clientId: z.string().min(1, "Client is required"),
+  clientId: z.string().optional(),
   title: z.string().min(1, "Title is required"),
   templateType: z.enum(["FREELANCE_AGREEMENT", "NDA", "SOW", "PROJECT_PROPOSAL", "CUSTOM"]),
   content: z.string().min(1, "Content is required"),

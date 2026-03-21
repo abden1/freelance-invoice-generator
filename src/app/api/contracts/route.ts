@@ -29,7 +29,34 @@ export async function POST(req: Request) {
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const body = await req.json();
+  const raw = await req.json();
+
+  // Map templateId → templateType, fill signer defaults, handle "none" clientId
+  const TEMPLATE_TYPE_MAP: Record<string, string> = {
+    "freelance-services": "FREELANCE_AGREEMENT",
+    "web-design": "SOW",
+    "consulting": "FREELANCE_AGREEMENT",
+    "retainer": "FREELANCE_AGREEMENT",
+    "nda": "NDA",
+  };
+
+  const body = {
+    ...raw,
+    clientId: raw.clientId && raw.clientId !== "none" ? raw.clientId : undefined,
+    templateType:
+      raw.templateType ??
+      (raw.templateId ? TEMPLATE_TYPE_MAP[raw.templateId] ?? "CUSTOM" : "CUSTOM"),
+    signers: Array.isArray(raw.signers)
+      ? raw.signers.map((s: { name: string; email: string }) => ({
+          name: s.name,
+          email: s.email,
+          status: "PENDING",
+          signedAt: null,
+          signature: null,
+        }))
+      : raw.signers,
+  };
+
   const parsed = contractSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json({ error: "Validation failed", details: parsed.error.flatten() }, { status: 400 });

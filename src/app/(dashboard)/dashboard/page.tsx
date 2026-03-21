@@ -1,26 +1,87 @@
 import { Suspense } from "react";
 import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 import { StatsCards } from "@/components/dashboard/stats-cards";
 import { RevenueChart } from "@/components/dashboard/revenue-chart";
 import { RecentActivity } from "@/components/dashboard/recent-activity";
 import { UpcomingDueDates } from "@/components/dashboard/upcoming-due-dates";
 import { Skeleton } from "@/components/ui/skeleton";
+import { startOfMonth, endOfMonth, subMonths, format } from "date-fns";
 
-async function getAnalytics() {
+async function getAnalytics(userId: string) {
   try {
-    const session = await auth();
-    if (!session?.user) return null;
+    const now = new Date();
+    const thisMonthStart = startOfMonth(now);
+    const thisMonthEnd = endOfMonth(now);
 
-    const baseUrl = process.env.NEXTAUTH_URL ?? "http://localhost:3000";
-    const res = await fetch(`${baseUrl}/api/analytics`, {
-      headers: {
-        Cookie: ``,
-      },
-      cache: "no-store",
-    });
+    const [allInvoices, thisMonthInvoices, recentActivity] = await Promise.all([
+      prisma.invoice.findMany({
+        where: { userId, status: { not: "CANCELLED" } },
+        select: { total: true, status: true, paidAmount: true },
+      }),
+      prisma.invoice.findMany({
+        where: {
+          userId,
+          createdAt: { gte: thisMonthStart, lte: thisMonthEnd },
+          status: { not: "CANCELLED" },
+        },
+        select: { total: true, status: true },
+      }),
+      prisma.invoice.findMany({
+        where: { userId },
+        orderBy: { createdAt: "desc" },
+        take: 10,
+        select: {
+          id: true,
+          number: true,
+          status: true,
+          total: true,
+          currency: true,
+          createdAt: true,
+          client: { select: { name: true } },
+        },
+      }),
+    ]);
 
-    if (!res.ok) return null;
-    return res.json();
+    const stats = {
+      totalInvoiced: allInvoices.reduce((s, i) => s + Number(i.total), 0),
+      totalPaid: allInvoices
+        .filter((i) => i.status === "PAID")
+        .reduce((s, i) => s + Number(i.total), 0),
+      totalPending: allInvoices
+        .filter((i) => i.status === "SENT")
+        .reduce((s, i) => s + Number(i.total), 0),
+      totalOverdue: allInvoices
+        .filter((i) => i.status === "OVERDUE")
+        .reduce((s, i) => s + Number(i.total), 0),
+      thisMonthInvoiced: thisMonthInvoices.reduce((s, i) => s + Number(i.total), 0),
+    };
+
+    const revenueByMonth = [];
+    for (let i = 5; i >= 0; i--) {
+      const monthDate = subMonths(now, i);
+      const monthStart = startOfMonth(monthDate);
+      const monthEnd = endOfMonth(monthDate);
+
+      const monthInvoices = await prisma.invoice.findMany({
+        where: {
+          userId,
+          createdAt: { gte: monthStart, lte: monthEnd },
+          status: { not: "CANCELLED" },
+        },
+        select: { total: true, status: true },
+      });
+
+      revenueByMonth.push({
+        month: format(monthDate, "MMM yyyy"),
+        revenue: monthInvoices
+          .filter((inv) => inv.status === "PAID")
+          .reduce((s, inv) => s + Number(inv.total), 0),
+        invoiced: monthInvoices.reduce((s, inv) => s + Number(inv.total), 0),
+      });
+    }
+
+    return { stats, revenueByMonth, recentActivity };
   } catch {
     return null;
   }
@@ -45,7 +106,8 @@ function TableSkeleton() {
 }
 
 export default async function DashboardPage() {
-  const analytics = await getAnalytics();
+  const session = await auth();
+  const analytics = session?.user?.id ? await getAnalytics(session.user.id) : null;
 
   return (
     <div className="space-y-6">
