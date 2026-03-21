@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect, useCallback } from "react";
-import { Menu, Sun, Moon, Bell, Check, Trash2, Send, DollarSign, AlertTriangle, FileCheck, FileText } from "lucide-react";
+import { Menu, Sun, Moon, Bell, Check, Trash2, Send, DollarSign, AlertTriangle, FileCheck, FileText, type LucideIcon } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { UserMenu } from "@/components/layout/user-menu";
@@ -48,8 +48,6 @@ interface Notification {
   link?: string | null;
   createdAt: string;
 }
-
-import type { LucideIcon } from "lucide-react";
 
 const typeIcon: Record<string, LucideIcon> = {
   INVOICE_SENT: Send,
