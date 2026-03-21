@@ -78,6 +78,17 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
       },
     });
 
+    // Create in-app notification
+    await prisma.notification.create({
+      data: {
+        userId: session.user.id,
+        type: "INVOICE_SENT",
+        title: `Invoice #${invoice.number} sent`,
+        message: `Sent to ${invoice.client.name} · ${formatCurrency(Number(invoice.total), invoice.currency)}`,
+        link: `/invoices/${invoice.id}`,
+      },
+    });
+
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Send invoice error:", error);
