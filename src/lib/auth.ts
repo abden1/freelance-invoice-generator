@@ -5,6 +5,7 @@ import Google from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
+import { authConfig } from "@/auth.config";
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -12,12 +13,8 @@ const loginSchema = z.object({
 });
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfig,
   adapter: PrismaAdapter(prisma),
-  session: { strategy: "jwt" },
-  pages: {
-    signIn: "/login",
-    error: "/login",
-  },
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -51,18 +48,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      if (token.id) {
-        session.user.id = token.id as string;
-      }
-      return session;
-    },
+    ...authConfig.callbacks,
     async signIn({ user, account }) {
       if (account?.provider === "google") {
         // Auto-create subscription for OAuth users

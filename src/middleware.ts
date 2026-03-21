@@ -1,11 +1,15 @@
-import { auth } from "@/lib/auth";
+import NextAuth from "next-auth";
+import { authConfig } from "@/auth.config";
 import { NextResponse } from "next/server";
+
+const { auth } = NextAuth(authConfig);
 
 export default auth((req) => {
   const { nextUrl, auth: session } = req;
   const isLoggedIn = !!session;
 
-  const isDashboardRoute = nextUrl.pathname.startsWith("/dashboard") ||
+  const isDashboardRoute =
+    nextUrl.pathname.startsWith("/dashboard") ||
     nextUrl.pathname.startsWith("/invoices") ||
     nextUrl.pathname.startsWith("/contracts") ||
     nextUrl.pathname.startsWith("/clients") ||
@@ -21,7 +25,7 @@ export default auth((req) => {
     nextUrl.pathname.startsWith("/api/auth") ||
     nextUrl.pathname.startsWith("/api/register") ||
     nextUrl.pathname.startsWith("/api/stripe/webhook") ||
-    nextUrl.pathname.startsWith("/api/contracts") && nextUrl.pathname.includes("/sign");
+    (nextUrl.pathname.startsWith("/api/contracts") && nextUrl.pathname.includes("/sign"));
 
   // Protect dashboard routes
   if (isDashboardRoute && !isLoggedIn) {
