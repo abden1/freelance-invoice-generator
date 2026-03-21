@@ -147,7 +147,10 @@ export function InvoiceBuilder({ defaultValues }: InvoiceBuilderProps) {
         currency: data.currency,
         notes: data.notes,
         paymentTerms: data.paymentTerms,
-        items,
+        items: items.map((item) => ({
+          ...item,
+          amount: item.quantity * item.rate,
+        })),
         taxRate,
         discountType,
         discountValue,
