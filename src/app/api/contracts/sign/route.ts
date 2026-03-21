@@ -101,19 +101,6 @@ export async function POST(req: Request) {
       },
     });
 
-    // Notify contract owner when all parties have signed
-    if (allSigned) {
-      await prisma.notification.create({
-        data: {
-          userId: contract.userId,
-          type: "CONTRACT_SIGNED",
-          title: `Contract signed: ${contract.title}`,
-          message: `${signerName || "Your client"} has signed the contract`,
-          link: `/contracts/${contract.id}`,
-        },
-      });
-    }
-
     return NextResponse.json({ success: true, allSigned });
   } catch (error) {
     console.error("Sign error:", error);

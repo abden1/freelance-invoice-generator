@@ -27,14 +27,6 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   const body = await req.json();
 
   if (body.status !== undefined && Object.keys(body).length <= 3) {
-    // Fetch invoice before update to get number/client for notification
-    const existing = body.status === "PAID"
-      ? await prisma.invoice.findFirst({
-          where: { id, userId: session.user.id },
-          include: { client: { select: { name: true } } },
-        })
-      : null;
-
     const updated = await prisma.invoice.updateMany({
       where: { id, userId: session.user.id },
       data: {
@@ -44,20 +36,6 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
       },
     });
     if (updated.count === 0) return NextResponse.json({ error: "Not found" }, { status: 404 });
-
-    // Create notification when invoice is marked as paid
-    if (body.status === "PAID" && existing) {
-      await prisma.notification.create({
-        data: {
-          userId: session.user.id,
-          type: "INVOICE_PAID",
-          title: `Invoice #${existing.number} marked as paid`,
-          message: `Payment received from ${existing.client.name}`,
-          link: `/invoices/${id}`,
-        },
-      });
-    }
-
     return NextResponse.json({ success: true });
   }
 

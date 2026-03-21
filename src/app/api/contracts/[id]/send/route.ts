@@ -48,18 +48,6 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
       data: { status: "PENDING_SIGNATURE" },
     });
 
-    // Create in-app notification
-    const recipientName = contract.client?.name ?? (signers[0]?.name ?? "client");
-    await prisma.notification.create({
-      data: {
-        userId: session.user.id,
-        type: "CONTRACT_SENT",
-        title: `Contract sent: ${contract.title}`,
-        message: `Sent to ${recipientName} for signing`,
-        link: `/contracts/${id}`,
-      },
-    });
-
     return NextResponse.json({ success: true });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
