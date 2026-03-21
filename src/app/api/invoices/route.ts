@@ -49,7 +49,27 @@ export async function POST(req: Request) {
     );
   }
 
-  const body = await req.json();
+  const raw = await req.json();
+
+  // Normalize field names: accept both old and new naming conventions
+  const body = {
+    ...raw,
+    // Accept invoiceNumber OR number
+    number: raw.number ?? raw.invoiceNumber,
+    // Accept issuedAt OR issueDate
+    issueDate: raw.issueDate ?? raw.issuedAt,
+    // Compute missing amount on each item
+    items: Array.isArray(raw.items)
+      ? raw.items.map((item: Record<string, number | string>) => ({
+          ...item,
+          amount:
+            item.amount !== undefined
+              ? item.amount
+              : Number(item.quantity ?? 0) * Number(item.rate ?? 0),
+        }))
+      : raw.items,
+  };
+
   const parsed = invoiceSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json({ error: "Validation failed", details: parsed.error.flatten() }, { status: 400 });
