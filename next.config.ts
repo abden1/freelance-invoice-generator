@@ -8,7 +8,6 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "avatars.githubusercontent.com" },
     ],
   },
-  serverExternalPackages: ["@react-pdf/renderer"],
 };
 
 export default nextConfig;

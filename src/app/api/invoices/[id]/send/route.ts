@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { sendInvoiceEmail } from "@/lib/resend";
-import { generateInvoicePDF } from "@/lib/pdf";
+import { generateInvoicePDF } from "@/lib/invoice-pdf";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { InvoiceItem } from "@/types";
 

@@ -4,7 +4,7 @@ export const dynamic = "force-dynamic";
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { generateInvoicePDF } from "@/lib/pdf";
+import { generateInvoicePDF } from "@/lib/invoice-pdf";
 import type { InvoiceItem } from "@/types";
 
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
