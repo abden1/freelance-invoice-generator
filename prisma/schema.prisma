@@ -1,0 +1,248 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ─────────────────────────── NextAuth Models ───────────────────────────
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ─────────────────────────── Core Models ───────────────────────────
+
+model User {
+  id                  String    @id @default(cuid())
+  email               String    @unique
+  name                String?
+  password            String?   @db.Text
+  emailVerified       DateTime?
+  image               String?
+  companyName         String?
+  companyAddress      String?
+  companyCity         String?
+  companyCountry      String?
+  taxId               String?
+  vatNumber           String?
+  logoUrl             String?
+  brandColor          String    @default("#4F46E5")
+  defaultCurrency     String    @default("USD")
+  defaultPaymentTerms Int       @default(30)
+  invoicePrefix       String    @default("INV")
+  nextInvoiceNumber   Int       @default(1)
+  lateFeeEnabled      Boolean   @default(false)
+  lateFeePercentage   Float     @default(0)
+  onboardingComplete  Boolean   @default(false)
+  emailNotifications  Boolean   @default(true)
+  reminderDaysBefore  Int       @default(3)
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  accounts     Account[]
+  sessions     Session[]
+  clients      Client[]
+  invoices     Invoice[]
+  contracts    Contract[]
+  expenses     Expense[]
+  subscription Subscription?
+}
+
+model Client {
+  id        String   @id @default(cuid())
+  userId    String
+  name      String
+  email     String
+  company   String?
+  phone     String?
+  address   String?
+  city      String?
+  country   String?
+  notes     String?  @db.Text
+  tags      String[] @default([])
+  currency  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  invoices  Invoice[]
+  contracts Contract[]
+  expenses  Expense[]
+}
+
+model Invoice {
+  id               String        @id @default(cuid())
+  userId           String
+  clientId         String
+  number           String
+  status           InvoiceStatus @default(DRAFT)
+  issueDate        DateTime
+  dueDate          DateTime
+  currency         String        @default("USD")
+  items            Json
+  subtotal         Decimal       @db.Decimal(10, 2)
+  taxRate          Decimal       @default(0) @db.Decimal(5, 2)
+  taxAmount        Decimal       @default(0) @db.Decimal(10, 2)
+  discountType     String?
+  discountValue    Decimal       @default(0) @db.Decimal(10, 2)
+  discountAmount   Decimal       @default(0) @db.Decimal(10, 2)
+  total            Decimal       @db.Decimal(10, 2)
+  notes            String?       @db.Text
+  paymentTerms     String?
+  paidAmount       Decimal       @default(0) @db.Decimal(10, 2)
+  paidDate         DateTime?
+  stripePaymentUrl String?
+  sentAt           DateTime?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  client    Client     @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  reminders Reminder[]
+
+  @@unique([userId, number])
+}
+
+model Contract {
+  id           String         @id @default(cuid())
+  userId       String
+  clientId     String
+  title        String
+  templateType ContractType   @default(CUSTOM)
+  content      String         @db.Text
+  status       ContractStatus @default(DRAFT)
+  signers      Json           @default("[]")
+  signedPdfUrl String?
+  signingToken String?        @unique
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  signedAt     DateTime?
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+}
+
+model Expense {
+  id          String   @id @default(cuid())
+  userId      String
+  clientId    String?
+  category    String
+  amount      Decimal  @db.Decimal(10, 2)
+  currency    String   @default("USD")
+  vendor      String?
+  description String?  @db.Text
+  receiptUrl  String?
+  date        DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  client Client? @relation(fields: [clientId], references: [id], onDelete: SetNull)
+}
+
+model Subscription {
+  id                String    @id @default(cuid())
+  userId            String    @unique
+  plan              Plan      @default(FREE)
+  status            String    @default("active")
+  stripeCustomerId  String?
+  stripeSubId       String?
+  currentPeriodEnd  DateTime?
+  cancelAtPeriodEnd Boolean   @default(false)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Reminder {
+  id           String    @id @default(cuid())
+  invoiceId    String
+  type         String
+  daysOffset   Int
+  sentAt       DateTime?
+  scheduledFor DateTime
+  createdAt    DateTime  @default(now())
+
+  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+}
+
+model ContractTemplate {
+  id        String       @id @default(cuid())
+  type      ContractType
+  title     String
+  content   String       @db.Text
+  isSystem  Boolean      @default(true)
+  createdAt DateTime     @default(now())
+}
+
+// ─────────────────────────── Enums ───────────────────────────
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PAID
+  OVERDUE
+  CANCELLED
+  PARTIAL
+}
+
+enum ContractType {
+  FREELANCE_AGREEMENT
+  NDA
+  SOW
+  PROJECT_PROPOSAL
+  CUSTOM
+}
+
+enum ContractStatus {
+  DRAFT
+  SENT
+  PENDING_SIGNATURE
+  SIGNED
+  DECLINED
+}
+
+enum Plan {
+  FREE
+  PRO
+  BUSINESS
+}

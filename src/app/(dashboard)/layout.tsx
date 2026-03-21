@@ -1,0 +1,17 @@
+import { redirect } from "next/navigation";
+import { auth } from "@/lib/auth";
+import { SidebarWrapper } from "@/components/layout/sidebar-wrapper";
+
+export default async function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const session = await auth();
+
+  if (!session?.user) {
+    redirect("/login");
+  }
+
+  return <SidebarWrapper>{children}</SidebarWrapper>;
+}
