@@ -1,12 +1,14 @@
-import NextAuth from "next-auth";
-import { authConfig } from "@/auth.config";
-import { NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
+import { getToken } from "next-auth/jwt";
 
-const { auth } = NextAuth(authConfig);
+export async function middleware(req: NextRequest) {
+  const { nextUrl } = req;
 
-export default auth((req) => {
-  const { nextUrl, auth: session } = req;
-  const isLoggedIn = !!session;
+  const token = await getToken({
+    req,
+    secret: process.env.NEXTAUTH_SECRET,
+  });
+  const isLoggedIn = !!token;
 
   const isDashboardRoute =
     nextUrl.pathname.startsWith("/dashboard") ||
@@ -25,7 +27,8 @@ export default auth((req) => {
     nextUrl.pathname.startsWith("/api/auth") ||
     nextUrl.pathname.startsWith("/api/register") ||
     nextUrl.pathname.startsWith("/api/stripe/webhook") ||
-    (nextUrl.pathname.startsWith("/api/contracts") && nextUrl.pathname.includes("/sign"));
+    (nextUrl.pathname.startsWith("/api/contracts") &&
+      nextUrl.pathname.includes("/sign"));
 
   // Protect dashboard routes
   if (isDashboardRoute && !isLoggedIn) {
@@ -45,10 +48,8 @@ export default auth((req) => {
   }
 
   return NextResponse.next();
-});
+}
 
 export const config = {
-  matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|public|sign).*)",
-  ],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|public|sign).*)"],
 };
