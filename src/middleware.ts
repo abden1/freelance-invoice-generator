@@ -1,14 +1,12 @@
-import { NextResponse, type NextRequest } from "next/server";
-import { getToken } from "next-auth/jwt";
+import NextAuth from "next-auth";
+import { authConfig } from "@/auth.config";
+import { NextResponse } from "next/server";
 
-export async function middleware(req: NextRequest) {
+const { auth } = NextAuth(authConfig);
+
+export default auth((req) => {
   const { nextUrl } = req;
-
-  const token = await getToken({
-    req,
-    secret: process.env.NEXTAUTH_SECRET,
-  });
-  const isLoggedIn = !!token;
+  const isLoggedIn = !!req.auth;
 
   const isDashboardRoute =
     nextUrl.pathname.startsWith("/dashboard") ||
@@ -48,7 +46,7 @@ export async function middleware(req: NextRequest) {
   }
 
   return NextResponse.next();
-}
+});
 
 export const config = {
   matcher: ["/((?!_next/static|_next/image|favicon.ico|public|sign).*)"],

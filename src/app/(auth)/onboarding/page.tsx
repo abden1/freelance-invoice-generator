@@ -1,11 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Loader2, Building2, Settings2, Rocket, Check } from "lucide-react";
+import {
+  Loader2,
+  Building2,
+  Settings2,
+  Rocket,
+  Check,
+  ChevronDown,
+  Search,
+  MapPin,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,7 +25,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
 import { cn, CURRENCIES } from "@/lib/utils";
+import { COUNTRIES } from "@/lib/countries";
 import { toast } from "sonner";
 
 const step1Schema = z.object({
@@ -48,6 +66,35 @@ export default function OnboardingPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<Partial<Step1Data & Step2Data>>({});
 
+  // Country/city state
+  const [selectedCountry, setSelectedCountry] = useState<string>("");
+  const [selectedCity, setSelectedCity] = useState<string>("");
+  const [countrySearch, setCountrySearch] = useState("");
+  const [citySearch, setCitySearch] = useState("");
+  const [countryDrawerOpen, setCountryDrawerOpen] = useState(false);
+  const [cityDrawerOpen, setCityDrawerOpen] = useState(false);
+
+  const filteredCountries = useMemo(
+    () =>
+      COUNTRIES.filter((c) =>
+        c.name.toLowerCase().includes(countrySearch.toLowerCase())
+      ),
+    [countrySearch]
+  );
+
+  const currentCountryData = useMemo(
+    () => COUNTRIES.find((c) => c.name === selectedCountry),
+    [selectedCountry]
+  );
+
+  const filteredCities = useMemo(
+    () =>
+      (currentCountryData?.cities ?? []).filter((city) =>
+        city.toLowerCase().includes(citySearch.toLowerCase())
+      ),
+    [currentCountryData, citySearch]
+  );
+
   const step1Form = useForm<Step1Data>({
     resolver: zodResolver(step1Schema),
     defaultValues: {
@@ -69,7 +116,12 @@ export default function OnboardingPage() {
   });
 
   const handleStep1Submit = (data: Step1Data) => {
-    setFormData((prev) => ({ ...prev, ...data }));
+    const enriched = {
+      ...data,
+      companyCountry: selectedCountry || data.companyCountry,
+      companyCity: selectedCity || data.companyCity,
+    };
+    setFormData((prev) => ({ ...prev, ...enriched }));
     setCurrentStep(2);
   };
 
@@ -188,22 +240,161 @@ export default function OnboardingPage() {
             />
           </div>
 
+          {/* Country Drawer */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="companyCity">City</Label>
-              <Input
-                id="companyCity"
-                placeholder="New York"
-                {...step1Form.register("companyCity")}
-              />
+              <Label>Country</Label>
+              <Drawer open={countryDrawerOpen} onOpenChange={setCountryDrawerOpen}>
+                <DrawerTrigger asChild>
+                  <button
+                    type="button"
+                    className={cn(
+                      "flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background",
+                      "hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+                      !selectedCountry && "text-muted-foreground"
+                    )}
+                  >
+                    <span className="flex items-center gap-2 truncate">
+                      <MapPin className="h-3.5 w-3.5 shrink-0" />
+                      {selectedCountry || "Select country"}
+                    </span>
+                    <ChevronDown className="h-4 w-4 shrink-0 opacity-50" />
+                  </button>
+                </DrawerTrigger>
+                <DrawerContent className="max-h-[85vh]">
+                  <DrawerHeader>
+                    <DrawerTitle>Select Country</DrawerTitle>
+                  </DrawerHeader>
+                  <div className="px-4 pb-2">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <Input
+                        placeholder="Search countries..."
+                        className="pl-9"
+                        value={countrySearch}
+                        onChange={(e) => setCountrySearch(e.target.value)}
+                        autoFocus
+                      />
+                    </div>
+                  </div>
+                  <div className="overflow-y-auto px-4 pb-8" style={{ maxHeight: "60vh" }}>
+                    {filteredCountries.map((country) => (
+                      <DrawerClose key={country.code} asChild>
+                        <button
+                          type="button"
+                          className={cn(
+                            "flex w-full items-center justify-between rounded-md px-3 py-2.5 text-sm hover:bg-accent",
+                            selectedCountry === country.name && "bg-accent font-medium"
+                          )}
+                          onClick={() => {
+                            setSelectedCountry(country.name);
+                            setSelectedCity("");
+                            setCountrySearch("");
+                          }}
+                        >
+                          <span>{country.name}</span>
+                          {selectedCountry === country.name && (
+                            <Check className="h-4 w-4 text-primary" />
+                          )}
+                        </button>
+                      </DrawerClose>
+                    ))}
+                    {filteredCountries.length === 0 && (
+                      <p className="py-8 text-center text-sm text-muted-foreground">
+                        No countries found
+                      </p>
+                    )}
+                  </div>
+                </DrawerContent>
+              </Drawer>
             </div>
+
+            {/* City Drawer */}
             <div className="space-y-2">
-              <Label htmlFor="companyCountry">Country</Label>
-              <Input
-                id="companyCountry"
-                placeholder="United States"
-                {...step1Form.register("companyCountry")}
-              />
+              <Label>City</Label>
+              <Drawer open={cityDrawerOpen} onOpenChange={setCityDrawerOpen}>
+                <DrawerTrigger asChild>
+                  <button
+                    type="button"
+                    disabled={!selectedCountry}
+                    className={cn(
+                      "flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background",
+                      "hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+                      "disabled:cursor-not-allowed disabled:opacity-50",
+                      !selectedCity && "text-muted-foreground"
+                    )}
+                  >
+                    <span className="truncate">{selectedCity || "Select city"}</span>
+                    <ChevronDown className="h-4 w-4 shrink-0 opacity-50" />
+                  </button>
+                </DrawerTrigger>
+                <DrawerContent className="max-h-[85vh]">
+                  <DrawerHeader>
+                    <DrawerTitle>Select City — {selectedCountry}</DrawerTitle>
+                  </DrawerHeader>
+                  <div className="px-4 pb-2">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <Input
+                        placeholder="Search cities..."
+                        className="pl-9"
+                        value={citySearch}
+                        onChange={(e) => setCitySearch(e.target.value)}
+                        autoFocus
+                      />
+                    </div>
+                  </div>
+                  <div className="overflow-y-auto px-4 pb-8" style={{ maxHeight: "60vh" }}>
+                    {/* Custom city option */}
+                    <DrawerClose asChild>
+                      <button
+                        type="button"
+                        className="flex w-full items-center gap-2 rounded-md px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent"
+                        onClick={() => {
+                          setSelectedCity("");
+                          setCitySearch("");
+                        }}
+                      >
+                        Enter city manually
+                      </button>
+                    </DrawerClose>
+                    <div className="my-1 border-t" />
+                    {filteredCities.map((city) => (
+                      <DrawerClose key={city} asChild>
+                        <button
+                          type="button"
+                          className={cn(
+                            "flex w-full items-center justify-between rounded-md px-3 py-2.5 text-sm hover:bg-accent",
+                            selectedCity === city && "bg-accent font-medium"
+                          )}
+                          onClick={() => {
+                            setSelectedCity(city);
+                            setCitySearch("");
+                          }}
+                        >
+                          <span>{city}</span>
+                          {selectedCity === city && (
+                            <Check className="h-4 w-4 text-primary" />
+                          )}
+                        </button>
+                      </DrawerClose>
+                    ))}
+                    {filteredCities.length === 0 && (
+                      <p className="py-8 text-center text-sm text-muted-foreground">
+                        No cities found
+                      </p>
+                    )}
+                  </div>
+                </DrawerContent>
+              </Drawer>
+              {/* Manual city input when no city selected from drawer */}
+              {selectedCountry && !selectedCity && (
+                <Input
+                  placeholder="Type your city..."
+                  className="mt-1"
+                  {...step1Form.register("companyCity")}
+                />
+              )}
             </div>
           </div>
 
