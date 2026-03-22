@@ -13,17 +13,17 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "FreelancePro — Invoice & Contract Generator",
-    template: "%s | FreelancePro",
+    default: "FLtool — Invoice & Contract Generator",
+    template: "%s | FLtool",
   },
   description:
     "Professional invoicing, contracts, and payment tracking for freelancers. Create beautiful invoices, manage clients, and get paid faster.",
   keywords: ["invoice generator", "freelance contracts", "payment tracking", "invoice software"],
   openGraph: {
     type: "website",
-    title: "FreelancePro — Invoice & Contract Generator",
+    title: "FLtool — Invoice & Contract Generator",
     description: "Professional invoicing and contracts for freelancers",
-    siteName: "FreelancePro",
+    siteName: "FLtool",
   },
 };
 

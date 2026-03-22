@@ -83,7 +83,7 @@ export default function RegisterPage() {
         </div>
         <h2 className="text-xl font-bold">Account created!</h2>
         <p className="text-muted-foreground text-sm">
-          Welcome to FreelancePro. Setting up your workspace...
+          Welcome to FLtool. Setting up your workspace...
         </p>
         <div className="flex justify-center">
           <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />

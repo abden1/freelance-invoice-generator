@@ -44,7 +44,7 @@ export async function sendInvoiceEmail({
   dueDate,
   paymentUrl,
   pdfBuffer,
-  fromName = "FreelancePro",
+  fromName = "FLtool",
 }: InvoiceEmailData) {
   const html = `
     <!DOCTYPE html>
@@ -132,7 +132,7 @@ export async function sendContractEmail({
   clientName,
   contractTitle,
   signingUrl,
-  fromName = "FreelancePro",
+  fromName = "FLtool",
 }: ContractEmailData) {
   const html = `
     <!DOCTYPE html>

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Zap } from "lucide-react";
+import Image from "next/image";
 
 export default function AuthLayout({
   children,
@@ -11,10 +11,10 @@ export default function AuthLayout({
       {/* Logo */}
       <div className="mb-8">
         <Link href="/" className="flex items-center gap-2">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary shadow-lg">
-            <Zap className="h-6 w-6 text-primary-foreground" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white shadow-lg">
+            <Image src="/logo.png" alt="FLtool" width={36} height={36} className="object-contain" />
           </div>
-          <span className="text-2xl font-bold tracking-tight">FreelancePro</span>
+          <span className="text-2xl font-bold tracking-tight">FLtool</span>
         </Link>
       </div>
 

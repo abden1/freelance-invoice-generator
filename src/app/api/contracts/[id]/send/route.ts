@@ -30,7 +30,7 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
         clientName: contract.client.name,
         contractTitle: contract.title,
         signingUrl,
-        fromName: contract.user.companyName || contract.user.name || "FreelancePro",
+        fromName: contract.user.companyName || contract.user.name || "FLtool",
       });
     } else if (signers.length > 0) {
       // Otherwise send to first signer
@@ -39,7 +39,7 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
         clientName: signers[0].name,
         contractTitle: contract.title,
         signingUrl,
-        fromName: contract.user.companyName || contract.user.name || "FreelancePro",
+        fromName: contract.user.companyName || contract.user.name || "FLtool",
       });
     }
 

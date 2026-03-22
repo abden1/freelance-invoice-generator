@@ -27,7 +27,7 @@ function getPageTitle(pathname: string): string {
   if (pathname.startsWith("/invoices/")) return "Invoice Details";
   if (pathname.startsWith("/clients/")) return "Client Details";
   if (pathname.startsWith("/contracts/")) return "Contract Details";
-  return "FreelancePro";
+  return "FLtool";
 }
 
 interface TopbarProps {

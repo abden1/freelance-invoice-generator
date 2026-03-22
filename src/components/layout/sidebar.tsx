@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { signOut, useSession } from "next-auth/react";
+import Image from "next/image";
 import {
   LayoutDashboard,
   FileText,
@@ -11,7 +12,6 @@ import {
   Users,
   Receipt,
   Settings,
-  Zap,
   ChevronLeft,
   ChevronRight,
   LogOut,
@@ -71,12 +71,12 @@ export function Sidebar({ isOpen = true, onToggle }: SidebarProps) {
       {/* Logo */}
       <div className="flex h-16 items-center px-4 border-b border-sidebar-border">
         <Link href="/dashboard" className="flex items-center gap-2 overflow-hidden">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary">
-            <Zap className="h-5 w-5 text-primary-foreground" />
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white">
+            <Image src="/logo.png" alt="FLtool" width={28} height={28} className="object-contain" />
           </div>
           {!collapsed && (
             <span className="font-bold text-lg tracking-tight whitespace-nowrap">
-              FreelancePro
+              FLtool
             </span>
           )}
         </Link>

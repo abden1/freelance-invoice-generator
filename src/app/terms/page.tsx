@@ -16,7 +16,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-lg font-semibold text-foreground mb-2">1. Acceptance of Terms</h2>
             <p>
-              By accessing or using FreelancePro, you agree to be bound by these Terms of Service.
+              By accessing or using FLtool, you agree to be bound by these Terms of Service.
               If you do not agree to these terms, please do not use our service.
             </p>
           </section>
@@ -24,7 +24,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-lg font-semibold text-foreground mb-2">2. Use of the Service</h2>
             <p>
-              FreelancePro provides tools for freelancers to manage invoices, contracts, clients, and expenses.
+              FLtool provides tools for freelancers to manage invoices, contracts, clients, and expenses.
               You are responsible for all activity that occurs under your account.
             </p>
           </section>
@@ -32,7 +32,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-lg font-semibold text-foreground mb-2">3. Electronic Signatures</h2>
             <p>
-              Electronic signatures created through FreelancePro are legally binding under applicable electronic
+              Electronic signatures created through FLtool are legally binding under applicable electronic
               signature laws. By signing a document, you agree that your signature is valid and enforceable.
             </p>
           </section>
@@ -48,7 +48,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-lg font-semibold text-foreground mb-2">5. Limitation of Liability</h2>
             <p>
-              FreelancePro is provided &quot;as is&quot; without warranties of any kind. We are not liable for
+              FLtool is provided &quot;as is&quot; without warranties of any kind. We are not liable for
               any indirect, incidental, or consequential damages arising from your use of the service.
             </p>
           </section>

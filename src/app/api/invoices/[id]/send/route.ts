@@ -66,7 +66,7 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
       dueDate: formatDate(invoice.dueDate),
       paymentUrl: invoice.stripePaymentUrl || undefined,
       pdfBuffer,
-      fromName: invoice.user.companyName || invoice.user.name || "FreelancePro",
+      fromName: invoice.user.companyName || invoice.user.name || "FLtool",
     });
 
     // Update status to SENT

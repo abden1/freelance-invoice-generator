@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import {
   FileText,
   Users,
@@ -6,7 +7,6 @@ import {
   TrendingUp,
   Receipt,
   BarChart3,
-  Zap,
   Check,
   ArrowRight,
   Star,
@@ -115,7 +115,7 @@ const testimonials = [
     name: "Sarah Johnson",
     role: "Freelance Designer",
     content:
-      "FreelancePro cut my invoicing time from 30 minutes to 5. I love how professional my invoices look now.",
+      "FLtool cut my invoicing time from 30 minutes to 5. I love how professional my invoices look now.",
     stars: 5,
   },
   {
@@ -141,10 +141,10 @@ export default function LandingPage() {
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
         <div className="container flex h-16 items-center justify-between px-4 mx-auto max-w-6xl">
           <Link href="/" className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-              <Zap className="h-4 w-4 text-primary-foreground" />
+            <div className="h-8 w-8 rounded-lg bg-white flex items-center justify-center">
+              <Image src="/logo.png" alt="FLtool" width={28} height={28} className="object-contain" />
             </div>
-            <span className="font-bold text-lg">FreelancePro</span>
+            <span className="font-bold text-lg">FLtool</span>
           </Link>
           <nav className="hidden md:flex items-center gap-6 text-sm text-muted-foreground">
             <a href="#features" className="hover:text-foreground transition-colors">Features</a>
@@ -166,7 +166,6 @@ export default function LandingPage() {
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent" />
         <div className="container mx-auto max-w-6xl px-4 text-center relative">
           <Badge variant="secondary" className="mb-6 px-4 py-1.5">
-            <Zap className="mr-1.5 h-3 w-3" />
             Trusted by 2,000+ freelancers
           </Badge>
           <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6 max-w-3xl mx-auto leading-tight">
@@ -204,7 +203,7 @@ export default function LandingPage() {
               Everything you need to run your freelance business
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              From invoicing to contracts to expense tracking — FreelancePro has every tool
+              From invoicing to contracts to expense tracking — FLtool has every tool
               you need in one beautiful platform.
             </p>
           </div>
@@ -321,7 +320,7 @@ export default function LandingPage() {
               Ready to get paid faster?
             </h2>
             <p className="text-primary-foreground/80 max-w-xl mx-auto mb-8 text-lg">
-              Join thousands of freelancers who use FreelancePro to run their business
+              Join thousands of freelancers who use FLtool to run their business
               professionally.
             </p>
             <Button
@@ -344,10 +343,10 @@ export default function LandingPage() {
         <div className="container mx-auto max-w-6xl px-4">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              <div className="h-6 w-6 rounded bg-primary flex items-center justify-center">
-                <Zap className="h-3.5 w-3.5 text-primary-foreground" />
+              <div className="h-6 w-6 rounded bg-white flex items-center justify-center">
+                <Image src="/logo.png" alt="FLtool" width={20} height={20} className="object-contain" />
               </div>
-              <span className="font-semibold">FreelancePro</span>
+              <span className="font-semibold">FLtool</span>
             </div>
             <div className="flex gap-6 text-sm text-muted-foreground">
               <Link href="/privacy" className="hover:text-foreground transition-colors">
@@ -361,7 +360,7 @@ export default function LandingPage() {
               </a>
             </div>
             <p className="text-sm text-muted-foreground">
-              &copy; {new Date().getFullYear()} FreelancePro. All rights reserved.
+              &copy; {new Date().getFullYear()} FLtool. All rights reserved.
             </p>
           </div>
         </div>

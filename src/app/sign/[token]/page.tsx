@@ -163,7 +163,7 @@ export default function SignContractPage() {
         <div className="text-center">
           <div className="flex items-center justify-center gap-2 mb-4">
             <FileSignature className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold">FreelancePro</span>
+            <span className="text-xl font-bold">FLtool</span>
           </div>
           <h1 className="text-2xl font-bold">{contract?.title}</h1>
           <p className="text-muted-foreground mt-1">
@@ -240,7 +240,7 @@ export default function SignContractPage() {
         </Card>
 
         <p className="text-center text-xs text-muted-foreground">
-          Powered by FreelancePro · Secure Electronic Signatures
+          Powered by FLtool · Secure Electronic Signatures
         </p>
       </div>
     </div>

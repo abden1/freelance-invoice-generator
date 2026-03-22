@@ -42,7 +42,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
         clientName: contract.client.name,
         contractTitle: contract.title,
         signingUrl,
-        fromName: contract.user.companyName || contract.user.name || "FreelancePro",
+        fromName: contract.user.companyName || contract.user.name || "FLtool",
       });
     }
 
